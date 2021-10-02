@@ -3,21 +3,21 @@
 
 extern HWND mainWnd;
 
-std::string getEditText(int editID)
+std::wstring getEditText(int editID)
 {
-    char buffer[20];
-    GetDlgItemTextA(mainWnd, editID, buffer, 20);
+    wchar_t buffer[20];
+    GetDlgItemTextW(mainWnd, editID, buffer, 20);
     return buffer;
 }
 
 void setEditFloat(int editID, float number, int precision)
 {
-    std::string formatStr = "%f";
+    std::wstring formatStr = L"%f";
     if(precision >= 0 && precision < 10)
-        formatStr = { '%', '.', (char)('0' +precision), 'f' };
+        formatStr = { '%', '.', (wchar_t)('0' +precision), 'f' };
     
-    char buffer[20];
-    sprintf_s(buffer, formatStr.c_str(), number);
+    wchar_t buffer[20];
+    swprintf_s(buffer, 20, formatStr.c_str(), number);
     
     setEditText(editID, buffer);
 }
@@ -30,13 +30,13 @@ float getEditFloat(uint editID) // tries to convert edits' text to float. Return
     return _wtof(editText);
 }
 
-void setEditText(uint editID, const char *text) // sets edit text with restoring user selection
+void setEditText(uint editID, cwstr text) // sets edit text with restoring user selection
 {
     // set text & restore caret position
     int caretStart, caretEnd;
     SendMessage(GetDlgItem(mainWnd, editID), EM_GETSEL, (WPARAM)&caretStart, (LPARAM)&caretEnd);
     
-    SetDlgItemTextA(mainWnd, editID, text);
+    SetDlgItemTextW(mainWnd, editID, text);
     
     SendMessage(GetDlgItem(mainWnd, editID), EM_SETSEL, caretStart, caretEnd);
 }
@@ -48,7 +48,7 @@ bool editHasValidValue(uint editID)
     if(editID == IDC_EDIT_MINUTES)
         return (getEditFloat(editID) >= 0 && getEditFloat(editID) <= 59);
 
-    return false;
+    return true;
 }
 
 void setOperandEditValues(int watts, int hours, int minutes, float price, int daysInUse)
@@ -56,16 +56,16 @@ void setOperandEditValues(int watts, int hours, int minutes, float price, int da
     SetDlgItemInt(mainWnd, IDC_EDIT_WATT_USAGE, watts    , false);
     SetDlgItemInt(mainWnd, IDC_EDIT_HOURS     , hours    , false);
     SetDlgItemInt(mainWnd, IDC_EDIT_MINUTES   , minutes  , false);
-    SetDlgItemInt(mainWnd, IDC_DAYS_IN_USE    , daysInUse, false);
+    SetDlgItemInt(mainWnd, IDC_EDIT_DAYS_IN_USE    , daysInUse, false);
     setEditFloat(IDC_EDIT_PRICE, price, 2);
 }
 
 
-void correctEditValue(int editID)
+float getCorrectEditValue(int editID)
 {
     switch(editID)
     {
-        case IDC_EDIT_HOURS:    setEditFloat(editID, 24, 0);    break;
-        case IDC_EDIT_MINUTES:  setEditFloat(editID, 59, 0);    break;
+        case IDC_EDIT_HOURS:    return 24.0f;
+        case IDC_EDIT_MINUTES:  return 59.0f;
     }
 }

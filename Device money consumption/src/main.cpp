@@ -2,9 +2,9 @@
 // It uses dialog box as its main window. So all message processing is in dialogMainProcedure()
 
 // DEPENDENCIES:
-// Help v1.0.2
-// Version History v1.0.2
-// av.dll v1.3.4
+// Help v1.0.3
+// Version History v1.0.3
+// av.dll v1.3.5
 
 #include <windows.h>
 #include <CommCtrl.h>
@@ -12,14 +12,30 @@
 #include <dwmapi.h>
 #include <HtmlHelp.h>
 #include <Shlwapi.h> // for stripping paths
+#include <regex>
 
 #include <Tests.h>
 #include <av.h>
 #include "../res/rc files/resource.h"
 #include "V:/0010/activeProjects/Visual Studio/_Avlibs/Currency names/Currency Name Strings.h"
 
-#include <LoadSave.h>
 #include <EditThings.h>
+#include <LoadSave.h>
+
+struct OldProcedure
+{
+    HWND controlWND;
+    WNDPROC procedure;
+
+    static std::vector <OldProcedure> procedures;
+    static const OldProcedure *find(HWND wnd)
+    {
+        for(int i=0; i < procedures.size(); i++)
+            if(wnd == procedures.at(i).controlWND)
+                return &procedures.at(i);
+    }
+};
+std::vector <OldProcedure> OldProcedure::procedures;
 
 // ### global variables
 AvTitleBtn onTopBtn;
@@ -41,17 +57,18 @@ WINDOWPLACEMENT windowPlacement;
 std::wstring companyName;
 std::wstring appName;
 std::wstring productVersion;
-std::wstring releaseDate = L"22.07.2021";
+std::wstring releaseDate = L"11.09.2021";
 HICON appIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_APPICON));
+bool programmaticCall = false;
 
 // ### function declarations / definitions
 BOOL CALLBACK dialogMainProcedure (HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 BOOL CALLBACK dialogAboutProcedure(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
+LRESULT CALLBACK newEditProcedure(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 void fillComboCurrencies();
 void fillAboutDlgInfo(HWND dlg);
-void onOperandChange(WPARAM wparam);
+void onOperandChange(int32_t editID);
 void recalculateTotal();  
-void replaceCommasWithDot(int editID);
 void setChildHWNDs(HWND hwnd);
 void setControlsFont(); 
 void setGlobalVariables(HWND hwnd);
@@ -59,8 +76,9 @@ void setAppAppearance();
 void setDefaultCurrency();
 void setMinMaxParams();
 void onHelp();
+void onComboCurrency(WPARAM wparam, LPARAM lparam);
 void setCurrency(const wchar_t *countryISO);
-int getFloatPrecision(const char* numberStr);
+int getFloatPrecision(cwstr numberStr);
 // # message processors
 void onInitDialogMsg(HWND);
 void onUpDown(uint updownID, bool incrementing);
@@ -73,13 +91,14 @@ INT_PTR onCtlColorStatic(WPARAM, LPARAM);
 void toggleTopmostStyle();
 void hideToTray();
 void onWindowPosChanged();
+void parseEditText(int editID);
 
 // ### application main entry point
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, char* args, int nCmdShow)
 {
     mainWnd = CreateDialogW(hInstance, MAKEINTRESOURCE(IDD_DIALOG_MAIN), 0,
                          dialogMainProcedure);
-
+    
     HACCEL accelerators = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDR_ACCELERATOR1));
     MSG message = {0};
     while(GetMessage(&message, 0, 0, 0))
@@ -99,9 +118,9 @@ HMODULE loadAvDll()
 {
     std::wstring resourcePath;
 #if _DEBUG
-    resourcePath = L"V:\\0010\\Archive\\Exes, libs\\AvtemLibs\\av\\Version 1.3.4\\avD.dll";
+    resourcePath = L"V:\\0010\\Archive\\Exes, libs\\AvtemLibs\\av\\Version 1.3.5\\avD.dll";
 #else
-    resourcePath = L"V:\\0010\\Archive\\Exes, libs\\AvtemLibs\\av\\Version 1.3.4\\av.dll";
+    resourcePath = L"V:\\0010\\Archive\\Exes, libs\\AvtemLibs\\av\\Version 1.3.5\\av.dll";
 #endif
     
     return LoadLibrary(resourcePath.c_str());
@@ -147,6 +166,20 @@ BOOL CALLBACK dialogAboutProcedure(HWND dlgAbout, UINT message, WPARAM wparam, L
     return false;
 }
 
+LRESULT CALLBACK newEditProcedure(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
+{
+    switch (message)
+    {
+        case WM_KILLFOCUS:
+            if(av::getEditText(hwnd).empty() || av::getEditText(hwnd) == L".")
+                SetDlgItemText(mainWnd, GetDlgCtrlID(hwnd), L"0");
+            break;
+    }
+
+    return CallWindowProc(OldProcedure::find(hwnd)->procedure, 
+                          hwnd, message, wparam, lparam);
+}
+
 void setMinMaxParams()
 {
     SendMessage(spinWattUsage, UDM_SETRANGE32, 0, 999999);
@@ -167,10 +200,25 @@ void onHelp()
     av::tryToOpenCHM(helpPath.c_str(), mainWnd);
 }
 
+void onComboCurrency(WPARAM wparam, LPARAM lparam)
+{
+    uint selectedIndex = SendMessage((HWND) lparam, CB_GETCURSEL, 0, 0);
+    currencies.at(selectedIndex);
+
+    if (HIWORD(wparam) == CBN_SELCHANGE
+        && selectedIndex >= 0
+        && selectedIndex  < currencies.size())
+    {
+        SetWindowTextW(statCurrSymbol, currencies.at(selectedIndex).symbol);
+        SetWindowTextW(statCurrSymbol2nd, currencies.at(selectedIndex).symbol);
+    }
+}
+
+
 void onVersionHistory()
 {
     // try "avApp Archive" first!
-    std::wstring helpPath = L"V:\\0010\\Archive\\Resource files\\Device money consumption\\Version history\\Version 1.0.2\\Version history - Device money consumption.chm";
+    std::wstring helpPath = L"V:\\0010\\Archive\\Resource files\\Device money consumption\\Version history\\Version 1.0.3\\Version history - Device money consumption.chm";
 
     if(!PathFileExists(helpPath.c_str()))  
        helpPath = av::getExeDir() + L"\\Version history - Device money consumption.chm";
@@ -230,6 +278,23 @@ void setGlobalVariables(HWND hwnd)
     appName = versionInfo.productName;
     companyName = versionInfo.companyName;
     productVersion = versionInfo.productVersion;
+
+    // subclass all 5 edits
+    for(int i=0; i < 5; i++)    
+    {
+        HWND wnd = 0;
+        switch (i)
+        {
+            case 0:   wnd = GetDlgItem(hwnd, IDC_EDIT_HOURS);           break;
+            case 1:   wnd = GetDlgItem(hwnd, IDC_EDIT_MINUTES);         break;
+            case 2:   wnd = GetDlgItem(hwnd, IDC_EDIT_WATT_USAGE);      break;
+            case 3:   wnd = GetDlgItem(hwnd, IDC_EDIT_DAYS_IN_USE);     break;
+            case 4:   wnd = GetDlgItem(hwnd, IDC_EDIT_PRICE);           break;
+        }
+
+        OldProcedure::procedures.push_back
+            ({wnd, (WNDPROC)SetWindowLongW(wnd, GWL_WNDPROC, (LONG)newEditProcedure)});
+    }
 }
 
 void setAppAppearance()
@@ -255,6 +320,11 @@ void fillAboutDlgInfo(HWND dlg)
 
 void onExit()
 {
+    HWND focusedWnd = GetFocus();
+    if(av::getClassName(focusedWnd) == L"Edit"
+    && (av::getEditText(focusedWnd).empty() || av::getEditText(focusedWnd) == L"."))
+        SetDlgItemText(mainWnd, GetDlgCtrlID(focusedWnd), L"0");
+
     saveAllSettings(mainWnd, trayIcon);
     DeleteObject(fontCurrency);
 
@@ -279,38 +349,26 @@ void onEndSession(WPARAM wparam, LPARAM lparam)
 
 void onCommand(WPARAM wparam, LPARAM lparam)
 {
-    switch (LOWORD(wparam))
-    {
-        case ID_FILE_EXIT:
-            onExit();
-            break;
-        case IDC_COMBO_CURRENCY:
-        {
-            uint selectedIndex = SendMessage((HWND) lparam, CB_GETCURSEL, 0, 0);
-            currencies.at(selectedIndex);
+    const int32_t controlID = LOWORD(wparam);
 
-            if (HIWORD(wparam) == CBN_SELCHANGE
-                && selectedIndex >= 0
-                && selectedIndex  < currencies.size())
-            {
-                SetWindowTextW(statCurrSymbol, currencies.at(selectedIndex).symbol);
-                SetWindowTextW(statCurrSymbol2nd, currencies.at(selectedIndex).symbol);
-            }
-            break;
-        }
+    switch (controlID)
+    {
         case IDC_EDIT_HOURS:
         case IDC_EDIT_MINUTES:
         case IDC_EDIT_PRICE:
         case IDC_EDIT_WATT_USAGE:
-        case IDC_DAYS_IN_USE:
+        case IDC_EDIT_DAYS_IN_USE:
         {
-            if (HIWORD(wparam) == EN_UPDATE)
-                onOperandChange(wparam);
-            break;
+            if (!programmaticCall && HIWORD(wparam) == EN_UPDATE)
+                onOperandChange(controlID);
         }
+            break;
+
+        case IDC_COMBO_CURRENCY:    onComboCurrency(wparam, lparam);    break;
         case ID_HELP_ABOUT:                     onMenuAbout();          break;
         case ID_HELP_HOWTOUSETHISPROGRAM:       onHelp();               break;
         case ID_VERSION:                        onVersionHistory();     break;
+        case ID_FILE_EXIT:                      onExit();               break;
     }
 }
 
@@ -348,6 +406,54 @@ void onWindowPosChanged()
                                             : (HICON) AvTitleBtn::PinGray);
 }
 
+void parseEditText(int editID)
+{
+    static std::wstring replaceWith = L"";  // delete EVERY MATCH
+    static std::wregex needle;
+    static std::wstring haystack;
+
+    // delete any "text" characters
+    haystack = getEditText(editID);
+    needle = L"[^\\d.,]";
+    haystack = std::regex_replace(haystack, needle, replaceWith);
+
+    switch (editID)
+    {
+        case IDC_EDIT_WATT_USAGE:
+        case IDC_EDIT_DAYS_IN_USE:
+        case IDC_EDIT_HOURS:
+        case IDC_EDIT_MINUTES:
+        {
+            needle = L"[.,]";
+            haystack = std::regex_replace(haystack, needle, replaceWith);
+
+            if (!editHasValidValue(editID))
+                haystack = av::numToStr((int)getCorrectEditValue(editID));
+
+            haystack = std::regex_replace(haystack, needle, replaceWith);
+        }
+            break;
+        case IDC_EDIT_PRICE:
+        {          
+            std::wcmatch matches;
+            needle = L"[.,]";
+            
+            // leave only first dot
+            int dotPos = -1;
+            std::regex_search(haystack.c_str(), matches, needle);
+            haystack = std::regex_replace(haystack, needle, replaceWith);
+            if(matches.size())
+            {
+                dotPos = matches.position(0);
+                haystack.insert(dotPos, L".");
+            }
+        }
+            break;
+    }
+    
+    setEditText(editID, haystack.c_str());
+}
+
 void fillComboCurrencies()
 {
     for (uint i = 0; i < currencies.size(); i++) {
@@ -376,11 +482,11 @@ void setDefaultCurrency()
 void recalculateTotal()
 {
   // get values from edits
-    float hours   = getEditFloat(IDC_EDIT_HOURS);
-    float minutes = (hours != 24) ? getEditFloat(IDC_EDIT_MINUTES) : 0;
-    float watts   = getEditFloat(IDC_EDIT_WATT_USAGE);
-    float price = getEditFloat(IDC_EDIT_PRICE) / 1000.0f;
-    float daysInUse = getEditFloat(IDC_DAYS_IN_USE);
+    float hours     = getEditFloat(IDC_EDIT_HOURS);
+    float minutes   = (hours != 24) ? getEditFloat(IDC_EDIT_MINUTES) : 0;
+    float watts     = getEditFloat(IDC_EDIT_WATT_USAGE);
+    float price     = getEditFloat(IDC_EDIT_PRICE) / 1000.0f;
+    float daysInUse = getEditFloat(IDC_EDIT_DAYS_IN_USE);
 
     float hoursTotal = (daysInUse * (hours*60.0f +minutes)) /60.0f;
     float totalCost = hoursTotal * watts *price; // so, that's the main result!
@@ -400,8 +506,7 @@ void onInitDialogMsg(HWND hwnd)
     setMinMaxParams();
     fillComboCurrencies();
 
-    if(!loadAllSettings(hwnd, trayIcon)) 
-        setDefaultSettings(hwnd);
+    loadAllSettings(hwnd, trayIcon);
 
 #ifdef _DEBUG
     // avDis: tesss
@@ -427,11 +532,11 @@ void onUpDown(uint updownID, bool incrementing)
     setEditFloat(updownID, newValue, floatPrecision);    
 }
 
-int getFloatPrecision(const char* numberStr)
+int getFloatPrecision(cwstr numberStr)
 {
     int digitsAfter = 0; // digit count after comma
     // count
-    for(int i = lstrlenA(numberStr) -1; i >= 0; i--)  // lstrlenA does not include NULL character
+    for(int i = lstrlenW(numberStr) -1; i >= 0; i--)  // lstrlenA does not include NULL character
     {
         if(numberStr[i] == '.')
             return digitsAfter;
@@ -441,23 +546,12 @@ int getFloatPrecision(const char* numberStr)
     return 0; // no '.' was found!
 }
 
-void replaceCommasWithDot(int editID)
-{
-    char buffer[20];
-    GetDlgItemTextA(mainWnd, editID, buffer, 20);
-    for(int i=0; i < 20; i++)
-        if(buffer[i] == ',')
-            buffer[i] = '.';
-
-    setEditText(editID, buffer);
-}
-
-void onOperandChange(WPARAM wparam)
-{
-    int editID = LOWORD(wparam);
+void onOperandChange(int32_t editID)
+{    
+    programmaticCall = true;
     
-    replaceCommasWithDot(editID);
-    if (!editHasValidValue(editID))
-        correctEditValue(editID);
+    parseEditText(editID);
     recalculateTotal();
+    
+    programmaticCall = false;
 }

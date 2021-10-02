@@ -4,6 +4,7 @@
 #include "../res/rc files/resource.h"
 #include <EditThings.h>
 #include <assert.h>
+#include <string> // for stoi
 #include "V:/0010/activeProjects/Visual Studio/_Avlibs/Currency Names/Currency Name Strings.h"
 
 extern std::wstring companyName;
@@ -16,68 +17,25 @@ extern float getEditFloat(uint editID);
 extern void setCurrency(const wchar_t *countryISO);
 extern void setOperandEditValues(int, int, int, float, int daysInUse);
 extern void setDefaultCurrency();
+static AvIni ini(L"settings.ini");
 
-void saveFloat(const wchar_t * valueName, float number)
+
+void loadAllSettings(HWND hwnd, AvTrayIcon &trayIcon)
 {
-    float f = number;
-    saveSetting(valueName, &f);
-}
-
-std::wstring getRegKeyPath()
-{
-    return std::wstring(L"SOFTWARE\\") + companyName 
-                 + std::wstring(L"\\") + appName;
-}
-
-bool regKeyExists(const wchar_t * keyPath)
-{
-    HKEY hKey;
-    bool regKeyExists = ERROR_SUCCESS == RegOpenKeyExW(HKEY_CURRENT_USER, keyPath, 0, 
-                                                       KEY_READ, &hKey);
-    RegCloseKey(hKey);
-    
-    return regKeyExists;
-}
-
-bool regValueExists(const wchar_t *value)
-{
-    HKEY hKey;
-    std::wstring keyPath = getRegKeyPath();
-    bool regKeyExists = ERROR_SUCCESS == RegOpenKeyExW(HKEY_CURRENT_USER, keyPath.c_str(),
-                                                       0, KEY_READ, &hKey);
-    if(!regKeyExists)
-        return false;
-
-    LONG result = RegQueryValueExW(hKey, value, 0, 0, 0, 0);
-    RegCloseKey(hKey);
-
-    return result == ERROR_SUCCESS;
-}
- 
-bool loadAllSettings(HWND hwnd, AvTrayIcon &trayIcon)
-{
-    std::wstring regPath = getRegKeyPath();
-    if(!regKeyExists( regPath.c_str() ) ) 
-        return false;
-
     loadFields();
-    if(!loadWindowPlacement(hwnd, trayIcon))
-        return false;
-
-    BOOL isTopmost = false;
-    loadSetting(L"isTopmost", &isTopmost);
-    if(isTopmost)
-        av::toggleTopMostStyle(hwnd);
-
-    return true;
+    loadCurrency();
+    loadWindowPlacement(hwnd, trayIcon);
 }
 
-bool loadWindowPlacement(HWND hwnd, AvTrayIcon &trayIcon)
+void loadWindowPlacement(HWND hwnd, AvTrayIcon &trayIcon)
 {
     WINDOWPLACEMENT wp;
     wp.length = sizeof(wp);  
-    if(!loadSetting(L"windowPlacement", &wp, REG_BINARY, sizeof(wp)))
-        return false;
+    if(!ini.loadBinary(L"windowPlacement", &wp, sizeof(wp)))
+    {
+        ShowWindow(hwnd, SW_SHOW);  // because it's never shown upon creation
+        return;  
+    }
     
     // This block (BLOCK1) ensures that user will always be able to move the main window. 
     // Imagine what happens if window was positioned in other monitor which
@@ -94,60 +52,66 @@ bool loadWindowPlacement(HWND hwnd, AvTrayIcon &trayIcon)
         if(!currMonitorPtL && !currMonitorPtR)
         {
             // returning will cause main window display in the center of primary monitor
-            return false;
+            return;
         }
     // end of BLOCK1
+        
+    bool isTopmost = ini.loadBoolean(L"isTopmost", L"false");
+    if(isTopmost)
+        av::toggleTopMostStyle(hwnd);
 
-    BOOL isMinimized = false;
-    loadSetting(L"isMinimized", &isMinimized);
-    if(isMinimized) {
+    bool isHiddenInTray = ini.loadBoolean(L"isHiddenInTray", "false");
+    if(isHiddenInTray) {
         wp.showCmd = SW_HIDE;
         trayIcon.show();
     }
 
     SetWindowPlacement(hwnd, &wp);
-    return true;
 }
 
 void loadFields()
 {
     float number = 0;
-    loadSetting(L"wattsUsage", &number);
-    setEditFloat(IDC_EDIT_WATT_USAGE, number, 0);
+    std::wstring str;
 
-    loadSetting(L"hours", &number);
-    setEditFloat(IDC_EDIT_HOURS, number, 0);
+    str = ini.loadString(L"wattsUsage", L"5");
+    setEditFloat(IDC_EDIT_WATT_USAGE, std::stoi(str), 0);
 
-    loadSetting(L"minutes", &number);
-    setEditFloat(IDC_EDIT_MINUTES, number, 0);
+    str = ini.loadString(L"hours", L"8");
+    setEditFloat(IDC_EDIT_HOURS, std::stoi(str), 0);
 
-    loadSetting(L"price", &number);
-    setEditFloat(IDC_EDIT_PRICE, number, 2);
+    str = ini.loadString(L"minutes", L"0");
+    setEditFloat(IDC_EDIT_MINUTES, std::stoi(str), 0);
 
-    loadSetting(L"daysInUse", &number);
-    setEditFloat(IDC_DAYS_IN_USE, number, 0);
+    str = ini.loadString(L"price", L"1.68");
+    setEditText(IDC_EDIT_PRICE, str.c_str());
 
-    wchar_t countryISO[3] = L"US";
-    loadSetting(L"countryISO", &countryISO, REG_BINARY, 6);
-    setCurrency(countryISO);
+    str = ini.loadString(L"daysInUse", L"30");
+    setEditFloat(IDC_EDIT_DAYS_IN_USE, std::stoi(str), 0);
 }
 
-bool loadSetting(const wchar_t * valueName, void *data, int dataType, uint dataSize)
+void loadCurrency()
 {
-    std::wstring regPath = getRegKeyPath();
-    if(!regValueExists(valueName))
-        return false;
+    std::wstring str = ini.loadString(L"countryISO", L"");
+    
+    if(str.empty())
+    {
+        // get current user locale
+        GEOID geoID = GetUserGeoID(GEOCLASS_NATION);
+        if(geoID == GEOID_NOT_AVAILABLE)
+            geoID = 244; // United States
+        wchar_t isoCode[3];
+        GetGeoInfoW(geoID, GEO_ISO2, isoCode, 3, 0);
+        str = isoCode;
+    }
 
-    uint restrictType = dataType == REG_DWORD ? RRF_RT_DWORD : RRF_RT_REG_BINARY;
-    RegGetValueW(HKEY_CURRENT_USER, regPath.c_str(), valueName, restrictType,
-                 (DWORD *)(&dataType), data, (DWORD *)(&dataSize));
-    return true;
+    setCurrency(str.c_str());
 }
+
 
 void saveAllSettings(HWND hwnd, const AvTrayIcon &trayIcon)
 {
-    BOOL isTopmost = av::isTopMost(hwnd);
-    saveSetting(L"isTopmost", &isTopmost);
+    ini.saveBoolean(L"isTopmost", av::isTopMost(hwnd));
 
     saveWindowPlacement(hwnd, trayIcon);
     saveFields();
@@ -158,48 +122,24 @@ void saveWindowPlacement(HWND hwnd, const AvTrayIcon &trayIcon)
     WINDOWPLACEMENT wp;
     wp.length = sizeof(wp);
     GetWindowPlacement(hwnd, &wp);
-    saveSetting(L"windowPlacement", &wp, REG_BINARY, sizeof(wp));
+    ini.saveBinary(L"windowPlacement", &wp, sizeof(wp));
 
-    BOOL isMinimized = trayIcon.isVisible();
-    saveSetting(L"isMinimized", &isMinimized);
+    ini.saveBoolean(L"isHiddenInTray", trayIcon.isVisible());
 }
 
 void saveFields()
 {
-    saveFloat(L"wattsUsage", getEditFloat(IDC_EDIT_WATT_USAGE));
-    saveFloat(L"hours", getEditFloat(IDC_EDIT_HOURS));
-    saveFloat(L"minutes", getEditFloat(IDC_EDIT_MINUTES));
-    saveFloat(L"price", getEditFloat(IDC_EDIT_PRICE));
-    saveFloat(L"daysInUse", getEditFloat(IDC_DAYS_IN_USE));
+    ini.saveString(L"wattsUsage", getEditText(IDC_EDIT_WATT_USAGE).c_str());
+    ini.saveString(L"hours"     , getEditText(IDC_EDIT_HOURS     ).c_str());
+    ini.saveString(L"minutes"   , getEditText(IDC_EDIT_MINUTES   ).c_str());
+    ini.saveString(L"price"     , getEditText(IDC_EDIT_PRICE     ).c_str());
+    ini.saveString(L"daysInUse" , getEditText(IDC_EDIT_DAYS_IN_USE).c_str());
     
     int index = SendMessage(comboCurrencies, CB_GETCURSEL, 0, 0);
     if(index > 0 && index < currencies.size()) {
         const wchar_t *isoCode = currencies[index].ISO639code;
-        saveSetting(L"countryISO", (void*)isoCode, REG_BINARY, 3 *2);
+        ini.saveString(L"countryISO", isoCode);     // avTODO: maybe dangerous?
     }
     else
         assert("Current index in combobox is weird!" == 0);
-}
-
-void setDefaultSettings(HWND hwnd)
-{
-    setDefaultCurrency();
-    setOperandEditValues(5, 8, 0, 1.75, 30);
-    ShowWindow(hwnd, SW_SHOW);
-}
-
-void saveSetting(const wchar_t *valueName, void *data, int dataType, uint dataSize)
-{ 
-    HKEY hKey; 
-    std::wstring regPath = getRegKeyPath();
-    RegCreateKeyExW(HKEY_CURRENT_USER, regPath.c_str(), 0, 0, REG_OPTION_NON_VOLATILE, 
-                    KEY_CREATE_SUB_KEY | KEY_SET_VALUE, 0, &hKey, nullptr);
-
-    int res = RegSetValueExW(hKey, valueName, 0, dataType, 
-                                       (const byte *) data, dataSize);
-#ifdef _DEBUG
-    assert(ERROR_SUCCESS == res);
-#endif
-    
-    RegCloseKey(hKey);
 }

@@ -1,0 +1,2 @@
+• fix layout for Win10
+• fix opening 2 help files

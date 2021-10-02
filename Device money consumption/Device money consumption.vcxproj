@@ -148,7 +148,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>avD.lib;SHLWAPI.LIB;HTMLHELP.LIB;VERSION.LIB;DWMAPI.LIB;COMCTL32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>V:\0010\Archive\Exes and Libs\AvtemLibs\av\Version 1.3.4\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(avD)</AdditionalLibraryDirectories>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(MSBuildProjectDirectory);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -177,7 +177,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>V:\0010\Archive\Exes and Libs\AvtemLibs\av\Version 1.3.4\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(av)</AdditionalLibraryDirectories>
       <AdditionalDependencies>av.lib;SHLWAPI.LIB;HTMLHELP.LIB;VERSION.LIB;DWMAPI.LIB;COMCTL32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ResourceCompile>
@@ -201,7 +201,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>V:\0010\Archive\Exes and Libs\AvtemLibs\av\Version 1.3.4\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(avD)</AdditionalLibraryDirectories>
       <AdditionalDependencies>avD.lib;SHLWAPI.LIB;HTMLHELP.LIB;VERSION.LIB;DWMAPI.LIB;COMCTL32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ResourceCompile>
@@ -231,7 +231,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>V:\0010\Archive\Exes and Libs\AvtemLibs\av\Version 1.3.4\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(av)</AdditionalLibraryDirectories>
       <AdditionalDependencies>av.lib;SHLWAPI.LIB;HTMLHELP.LIB;VERSION.LIB;DWMAPI.LIB;COMCTL32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ResourceCompile>
