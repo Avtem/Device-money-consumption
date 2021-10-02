@@ -51,11 +51,12 @@ bool editHasValidValue(uint editID)
     return false;
 }
 
-void setOperandEditValues(int watts, int hours, int minutes, float price)
+void setOperandEditValues(int watts, int hours, int minutes, float price, int daysInUse)
 {
-    SetDlgItemInt(mainWnd, IDC_EDIT_WATT_USAGE, watts, false);
-    SetDlgItemInt(mainWnd, IDC_EDIT_HOURS     , hours, false);
-    SetDlgItemInt(mainWnd, IDC_EDIT_MINUTES   , minutes, false);
+    SetDlgItemInt(mainWnd, IDC_EDIT_WATT_USAGE, watts    , false);
+    SetDlgItemInt(mainWnd, IDC_EDIT_HOURS     , hours    , false);
+    SetDlgItemInt(mainWnd, IDC_EDIT_MINUTES   , minutes  , false);
+    SetDlgItemInt(mainWnd, IDC_DAYS_IN_USE    , daysInUse, false);
     setEditFloat(IDC_EDIT_PRICE, price, 2);
 }
 

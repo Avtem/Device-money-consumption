@@ -66,5 +66,8 @@
     <Image Include="..\..\..\..\..\3.images\icons\# packs\fugue icons\icons 10x10\totray1.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\..\..\..\..\3.Images\Icons\PNG [original]\Light bulb 128x.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -48,6 +48,7 @@
     <Image Include="..\..\..\..\..\3.images\icons\# packs\fugue icons\icons 10x10\totray1.ico" />
     <Image Include="..\..\..\..\..\3.images\icons\Light bulb 128x.ico" />
     <Image Include="..\..\..\..\..\3.Images\Icons\Light bulb.ico" />
+    <Image Include="..\..\..\..\..\3.Images\Icons\PNG [original]\Light bulb 128x.bmp" />
     <Image Include="..\..\..\..\..\3.Images\Icons\PNG\Light bulb 128x.bmp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -146,8 +147,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>av.LIB;SHLWAPI.LIB;HTMLHELP.LIB;VERSION.LIB;DWMAPI.LIB;COMCTL32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(av)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>avD.lib;SHLWAPI.LIB;HTMLHELP.LIB;VERSION.LIB;DWMAPI.LIB;COMCTL32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>V:\0010\Archive\Exes and Libs\AvtemLibs\av\Version 1.3.4\</AdditionalLibraryDirectories>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(MSBuildProjectDirectory);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -176,8 +177,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(av)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>av.LIB;SHLWAPI.LIB;HTMLHELP.LIB;VERSION.LIB;DWMAPI.LIB;COMCTL32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>V:\0010\Archive\Exes and Libs\AvtemLibs\av\Version 1.3.4\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>av.lib;SHLWAPI.LIB;HTMLHELP.LIB;VERSION.LIB;DWMAPI.LIB;COMCTL32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(MSBuildProjectDirectory);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -200,8 +201,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(av)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>av.LIB;SHLWAPI.LIB;HTMLHELP.LIB;VERSION.LIB;DWMAPI.LIB;COMCTL32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>V:\0010\Archive\Exes and Libs\AvtemLibs\av\Version 1.3.4\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>avD.lib;SHLWAPI.LIB;HTMLHELP.LIB;VERSION.LIB;DWMAPI.LIB;COMCTL32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(MSBuildProjectDirectory);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -230,8 +231,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(av)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>av.LIB;SHLWAPI.LIB;HTMLHELP.LIB;VERSION.LIB;DWMAPI.LIB;COMCTL32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>V:\0010\Archive\Exes and Libs\AvtemLibs\av\Version 1.3.4\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>av.lib;SHLWAPI.LIB;HTMLHELP.LIB;VERSION.LIB;DWMAPI.LIB;COMCTL32.LIB;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(MSBuildProjectDirectory);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

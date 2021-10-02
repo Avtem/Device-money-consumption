@@ -100,7 +100,7 @@ END
 // Bitmap
 //
 
-IDB_BITMAP1             BITMAP                  "V:\\3.Images\\Icons\\PNG\\Light bulb 128x.bmp"
+IDB_BITMAP1             BITMAP                  "V:\\3.Images\\Icons\\PNG [original]\\Light bulb 128x.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -109,8 +109,8 @@ IDB_BITMAP1             BITMAP                  "V:\\3.Images\\Icons\\PNG\\Light
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION 1,0,2,0
+ PRODUCTVERSION 1,0,2,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -127,12 +127,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "AvApp"
             VALUE "FileDescription", "Application for calculating money consumption by devices"
-            VALUE "FileVersion", "1.0.0.0"
+            VALUE "FileVersion", "1.0.2.0"
             VALUE "InternalName", "Device money consumption"
             VALUE "LegalCopyright", "Nah"
             VALUE "OriginalFilename", "Device money consumption.exe"
             VALUE "ProductName", "Device money consumption"
-            VALUE "ProductVersion", "1.0.0"
+            VALUE "ProductVersion", "1.0.2.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -184,7 +184,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_NEUTRAL
 // Dialog
 //
 
-IDD_DIALOG_MAIN DIALOGEX 0, 0, 244, 125
+IDD_DIALOG_MAIN DIALOGEX 0, 0, 244, 143
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
 CAPTION "Dialog"
 MENU IDR_MENU
@@ -196,21 +196,25 @@ BEGIN
     CONTROL         "",IDC_SPIN_HOURS,"msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS,97,27,11,14
     EDITTEXT        IDC_EDIT_MINUTES,123,27,18,14,ES_NUMBER | NOT WS_BORDER,WS_EX_CLIENTEDGE
     CONTROL         "",IDC_SPIN_MINUTES,"msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS,142,27,11,14
-    COMBOBOX        IDC_COMBO_CURRENCY,78,46,156,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    EDITTEXT        IDC_EDIT_PRICE,78,66,34,14,NOT WS_BORDER,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_SPIN_PRICE,"msctls_updown32",UDS_AUTOBUDDY | UDS_ARROWKEYS,113,66,11,14
-    EDITTEXT        IDC_EDIT_TOTAL,78,94,46,14,ES_READONLY | NOT WS_BORDER,WS_EX_CLIENTEDGE
+    EDITTEXT        IDC_DAYS_IN_USE,77,48,29,14,ES_NUMBER | NOT WS_BORDER,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_SPIN_DAYS_IN_USE,"msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS,108,48,11,14
+    COMBOBOX        IDC_COMBO_CURRENCY,78,69,156,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_PRICE,78,89,34,14,NOT WS_BORDER,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_SPIN_PRICE,"msctls_updown32",UDS_AUTOBUDDY | UDS_ARROWKEYS,113,89,11,14
+    EDITTEXT        IDC_EDIT_TOTAL,78,119,46,14,ES_READONLY | NOT WS_BORDER,WS_EX_CLIENTEDGE
     RTEXT           "Device's Watt usage:",IDC_STATIC,2,10,69,8
     LTEXT           "Watt",IDC_STATIC,136,9,18,8
     RTEXT           "Using time per day:",IDC_STATIC,8,30,63,8
     LTEXT           "HH",IDC_STATIC,110,30,10,8
     LTEXT           "MM",IDC_STATIC,155,30,10,8
-    RTEXT           "Price per 1 kWh:",IDC_STATIC,17,69,54,8
-    RTEXT           "Currency:",IDC_STATIC,38,49,33,8
-    LTEXT           "Total cost per month:",IDC_STATIC,6,97,70,8
-    LTEXT           "",IDC_STATIC,5,85,229,4,0,WS_EX_DLGMODALFRAME
-    LTEXT           "(Currency)",IDC_STATIC_CURRENCY,128,69,52,15
-    LTEXT           "(Currency)",IDC_STATIC_CURRENCY2ND,128,97,36,8
+    RTEXT           "Price per 1 kWh:",IDC_STATIC,17,92,54,8
+    RTEXT           "Currency:",IDC_STATIC,38,72,33,8
+    LTEXT           "Total cost:",IDC_STATIC,36,122,35,8
+    LTEXT           "",IDC_STATIC,5,108,229,4,0,WS_EX_DLGMODALFRAME
+    LTEXT           "(Currency)",IDC_STATIC_CURRENCY,128,92,52,15
+    LTEXT           "(Currency)",IDC_STATIC_CURRENCY2ND,128,122,36,8
+    RTEXT           "Days in use:",IDC_STATIC,31,51,40,8
+    LTEXT           "Days",IDC_STATIC,122,51,17,8
 END
 
 
@@ -227,7 +231,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 237
         TOPMARGIN, 7
-        BOTTOMMARGIN, 118
+        BOTTOMMARGIN, 136
     END
 END
 #endif    // APSTUDIO_INVOKED

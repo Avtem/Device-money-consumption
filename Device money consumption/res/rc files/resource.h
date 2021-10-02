@@ -22,8 +22,11 @@
 #define IDC_SPIN_PRICE                  1009
 #define IDC_COMBO_CURRENCY              1010
 #define IDC_EDIT_TOTAL                  1011
+#define IDC_DAYS_IN_USE                 1012
 #define IDC_STATIC_CURRENCY             1013
 #define IDC_STATIC_CURRENCY2ND          1014
+#define IDC_SPIN_HOURS2                 1015
+#define IDC_SPIN_DAYS_IN_USE            1015
 #define IDC_ICONCONTROL1                1017
 #define ID_APPNAME                      1018
 #define ID_BY                           1019

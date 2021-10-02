@@ -3,8 +3,8 @@
 #include <windows.h>
 #include "../res/rc files/resource.h"
 #include <EditThings.h>
-#include "V:/0010/activeProjects/Visual Studio/_Avlibs/# Other/Currency Name Strings.h"
 #include <assert.h>
+#include "V:/0010/activeProjects/Visual Studio/_Avlibs/Currency Names/Currency Name Strings.h"
 
 extern std::wstring companyName;
 extern std::wstring appName;
@@ -14,7 +14,7 @@ extern HWND comboCurrencies;
 extern void setEditFloat(int editID, float number, int precision);
 extern float getEditFloat(uint editID); 
 extern void setCurrency(const wchar_t *countryISO);
-extern void setOperandEditValues(int, int, int, float);
+extern void setOperandEditValues(int, int, int, float, int daysInUse);
 extern void setDefaultCurrency();
 
 void saveFloat(const wchar_t * valueName, float number)
@@ -124,6 +124,9 @@ void loadFields()
     loadSetting(L"price", &number);
     setEditFloat(IDC_EDIT_PRICE, number, 2);
 
+    loadSetting(L"daysInUse", &number);
+    setEditFloat(IDC_DAYS_IN_USE, number, 0);
+
     wchar_t countryISO[3] = L"US";
     loadSetting(L"countryISO", &countryISO, REG_BINARY, 6);
     setCurrency(countryISO);
@@ -167,6 +170,7 @@ void saveFields()
     saveFloat(L"hours", getEditFloat(IDC_EDIT_HOURS));
     saveFloat(L"minutes", getEditFloat(IDC_EDIT_MINUTES));
     saveFloat(L"price", getEditFloat(IDC_EDIT_PRICE));
+    saveFloat(L"daysInUse", getEditFloat(IDC_DAYS_IN_USE));
     
     int index = SendMessage(comboCurrencies, CB_GETCURSEL, 0, 0);
     if(index > 0 && index < currencies.size()) {
@@ -180,7 +184,7 @@ void saveFields()
 void setDefaultSettings(HWND hwnd)
 {
     setDefaultCurrency();
-    setOperandEditValues(5, 8, 0, 1.75);
+    setOperandEditValues(5, 8, 0, 1.75, 30);
     ShowWindow(hwnd, SW_SHOW);
 }
 

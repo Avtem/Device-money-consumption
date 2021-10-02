@@ -1,6 +1,11 @@
 // This project was started 28.12.2020 with name "Device money consumption".
 // It uses dialog box as its main window. So all message processing is in dialogMainProcedure()
 
+// DEPENDENCIES:
+// Help v1.0.2
+// Version History v1.0.2
+// av.dll v1.3.4
+
 #include <windows.h>
 #include <CommCtrl.h>
 #include <string>
@@ -11,7 +16,7 @@
 #include <Tests.h>
 #include <av.h>
 #include "../res/rc files/resource.h"
-#include "V:/0010/activeProjects/Visual Studio/_Avlibs/# Other/Currency Name Strings.h"
+#include "V:/0010/activeProjects/Visual Studio/_Avlibs/Currency names/Currency Name Strings.h"
 
 #include <LoadSave.h>
 #include <EditThings.h>
@@ -26,6 +31,7 @@ HWND spinWattUsage;
 HWND spinHours;
 HWND spinMinutes;
 HWND spinPrice;
+HWND spinDaysInUse;
 HWND editPrice;
 HWND comboCurrencies;
 HWND statCurrSymbol;
@@ -35,8 +41,7 @@ WINDOWPLACEMENT windowPlacement;
 std::wstring companyName;
 std::wstring appName;
 std::wstring productVersion;
-std::wstring releaseDate = L"28.04.2021";
-const int DAYS_IN_MONTH = 30;
+std::wstring releaseDate = L"22.07.2021";
 HICON appIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_APPICON));
 
 // ### function declarations / definitions
@@ -90,6 +95,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, char* args, int nCmdShow)
     return 0;
 }
 
+HMODULE loadAvDll()
+{
+    std::wstring resourcePath;
+#if _DEBUG
+    resourcePath = L"V:\\0010\\Archive\\Exes, libs\\AvtemLibs\\av\\Version 1.3.4\\avD.dll";
+#else
+    resourcePath = L"V:\\0010\\Archive\\Exes, libs\\AvtemLibs\\av\\Version 1.3.4\\av.dll";
+#endif
+    
+    return LoadLibrary(resourcePath.c_str());
+}
+
 BOOL CALLBACK dialogMainProcedure(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
     switch(message)
@@ -136,20 +153,27 @@ void setMinMaxParams()
     SendMessage(spinHours    , UDM_SETRANGE32, 0, 24);
     SendMessage(spinMinutes  , UDM_SETRANGE32, 0, 59);
     SendMessage(spinPrice    , UDM_SETRANGE32, 0, 999999);
+    SendMessage(spinDaysInUse, UDM_SETRANGE32, 0, 999999);
 }
 
 void onHelp()
 {
-    std::wstring helpPath = av::getExeDir()
-        + L"\\Device money consumption - Help.chm";
+    // try "avApp Archive" first!
+    std::wstring helpPath = L"V:\\0010\\Archive\\Resource files\\Device money consumption\\Help\\Version 1.0.2\\Device money consumption - Help.chm";
+    
+    if(!PathFileExists(helpPath.c_str()))  
+       helpPath = av::getExeDir() + L"\\Device money consumption - Help.chm";
 
     av::tryToOpenCHM(helpPath.c_str(), mainWnd);
 }
 
 void onVersionHistory()
 {
-    std::wstring helpPath = av::getExeDir()
-        + L"\\Version history - Device money consumption.chm";
+    // try "avApp Archive" first!
+    std::wstring helpPath = L"V:\\0010\\Archive\\Resource files\\Device money consumption\\Version history\\Version 1.0.2\\Version history - Device money consumption.chm";
+
+    if(!PathFileExists(helpPath.c_str()))  
+       helpPath = av::getExeDir() + L"\\Version history - Device money consumption.chm";
 
     av::tryToOpenCHM(helpPath.c_str(), mainWnd);
 }
@@ -177,6 +201,7 @@ void setChildHWNDs(HWND hwnd)
     spinHours         = GetDlgItem(hwnd, IDC_SPIN_HOURS);
     spinMinutes       = GetDlgItem(hwnd, IDC_SPIN_MINUTES);
     spinPrice         = GetDlgItem(hwnd, IDC_SPIN_PRICE);
+    spinDaysInUse     = GetDlgItem(hwnd, IDC_SPIN_DAYS_IN_USE);
     comboCurrencies   = GetDlgItem(hwnd, IDC_COMBO_CURRENCY);
     statCurrSymbol    = GetDlgItem(hwnd, IDC_STATIC_CURRENCY);
     statCurrSymbol2nd = GetDlgItem(hwnd, IDC_STATIC_CURRENCY2ND);
@@ -232,6 +257,7 @@ void onExit()
 {
     saveAllSettings(mainWnd, trayIcon);
     DeleteObject(fontCurrency);
+
     DestroyWindow(mainWnd);
     PostQuitMessage(0);
 }
@@ -276,6 +302,7 @@ void onCommand(WPARAM wparam, LPARAM lparam)
         case IDC_EDIT_MINUTES:
         case IDC_EDIT_PRICE:
         case IDC_EDIT_WATT_USAGE:
+        case IDC_DAYS_IN_USE:
         {
             if (HIWORD(wparam) == EN_UPDATE)
                 onOperandChange(wparam);
@@ -353,8 +380,9 @@ void recalculateTotal()
     float minutes = (hours != 24) ? getEditFloat(IDC_EDIT_MINUTES) : 0;
     float watts   = getEditFloat(IDC_EDIT_WATT_USAGE);
     float price = getEditFloat(IDC_EDIT_PRICE) / 1000.0f;
+    float daysInUse = getEditFloat(IDC_DAYS_IN_USE);
 
-    float hoursTotal = (float(DAYS_IN_MONTH) * (hours*60.0f +minutes)) /60.0f;
+    float hoursTotal = (daysInUse * (hours*60.0f +minutes)) /60.0f;
     float totalCost = hoursTotal * watts *price; // so, that's the main result!
 
     setEditFloat(IDC_EDIT_TOTAL, totalCost, 2);
@@ -362,8 +390,8 @@ void recalculateTotal()
 
 void onInitDialogMsg(HWND hwnd)
 {
-    toTrayBtn.create(hwnd, hInst, 3, hideToTray, (HICON) AvTitleBtn::ToTray);
-    onTopBtn.create(hwnd, hInst, 4, toggleTopmostStyle, 0);
+    toTrayBtn.create(hwnd, hInst, 1, hideToTray, (HICON) AvTitleBtn::ToTray);
+    onTopBtn.create(hwnd, hInst, 2, toggleTopmostStyle, 0);
     trayIcon.create(hwnd, appName.c_str(), appIcon, AvTrayIcon::DefaultMenu, 0);
 
     setGlobalVariables(hwnd);
@@ -375,10 +403,10 @@ void onInitDialogMsg(HWND hwnd)
     if(!loadAllSettings(hwnd, trayIcon)) 
         setDefaultSettings(hwnd);
 
-    // avDebug: UNIT TESTS
 #ifdef _DEBUG
-    UnitTest unitTest;
-    unitTest.runAllTests();
+    // avDis: tesss
+    //UnitTest unitTest;
+    //unitTest.runAllTests();
 #endif
 }
 
