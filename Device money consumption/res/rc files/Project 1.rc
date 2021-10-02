@@ -1,0 +1,280 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Russian (Russia) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_ABOUT DIALOGEX 0, 0, 232, 114
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,174,90,50,14
+    ICON            IDI_128,IDC_STATIC,6,18,20,20,SS_REALSIZEIMAGE
+    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP | SS_REALSIZEIMAGE | NOT WS_VISIBLE,6,17,85,79
+    LTEXT           "APP_NAME",ID_APPNAME,102,6,114,8
+    LTEXT           "BY",ID_BY,120,18,96,8
+    LTEXT           "VERSION",ID_VERSION,102,43,96,8
+    LTEXT           "RELEASED",ID_RELEASED,139,55,54,8
+    LTEXT           "Released:",ID_RELEASED2,102,54,36,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 225
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 107
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_ABOUT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP1             BITMAP                  "V:\\3.Images\\Icons\\PNG\\Light bulb 128x.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,0
+ PRODUCTVERSION 1,0,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40000L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000904b0"
+        BEGIN
+            VALUE "CompanyName", "AvApp"
+            VALUE "FileDescription", "Application for calculating money consumption by devices"
+            VALUE "FileVersion", "1.0.0.0"
+            VALUE "InternalName", "Device money consumption"
+            VALUE "LegalCopyright", "Nah"
+            VALUE "OriginalFilename", "Device money consumption.exe"
+            VALUE "ProductName", "Device money consumption"
+            VALUE "ProductVersion", "1.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x9, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_128                 ICON                    "v:\\3.images\\icons\\Light bulb 128x.ico"
+
+IDI_APPICON             ICON                    "V:\\3.Images\\Icons\\Light bulb.ico"
+
+IDI_TOTRAY              ICON                    "V:\\3.Images\\Icons\\# Packs\\Fugue Icons\\icons 10x10\\arrow-315.ico"
+
+IDI_TOTRAY1             ICON                    "v:\\3.images\\icons\\# packs\\fugue icons\\icons 10x10\\totray1.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR1 ACCELERATORS
+BEGIN
+    VK_F1,          ID_HELP_HOWTOUSETHISPROGRAM, VIRTKEY, NOINVERT
+END
+
+#endif    // Russian (Russia) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_NEUTRAL
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_MAIN DIALOGEX 0, 0, 244, 125
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+MENU IDR_MENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_EDIT_WATT_USAGE,78,7,42,14,ES_NUMBER | NOT WS_BORDER,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_SPIN_WATT_USAGE,"msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,121,6,11,14
+    EDITTEXT        IDC_EDIT_HOURS,78,27,18,14,ES_NUMBER | NOT WS_BORDER,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_SPIN_HOURS,"msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS,97,27,11,14
+    EDITTEXT        IDC_EDIT_MINUTES,123,27,18,14,ES_NUMBER | NOT WS_BORDER,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_SPIN_MINUTES,"msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS,142,27,11,14
+    COMBOBOX        IDC_COMBO_CURRENCY,78,46,156,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_PRICE,78,66,34,14,NOT WS_BORDER,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_SPIN_PRICE,"msctls_updown32",UDS_AUTOBUDDY | UDS_ARROWKEYS,113,66,11,14
+    EDITTEXT        IDC_EDIT_TOTAL,78,94,46,14,ES_READONLY | NOT WS_BORDER,WS_EX_CLIENTEDGE
+    RTEXT           "Device's Watt usage:",IDC_STATIC,2,10,69,8
+    LTEXT           "Watt",IDC_STATIC,136,9,18,8
+    RTEXT           "Using time per day:",IDC_STATIC,8,30,63,8
+    LTEXT           "HH",IDC_STATIC,110,30,10,8
+    LTEXT           "MM",IDC_STATIC,155,30,10,8
+    RTEXT           "Price per 1 kWh:",IDC_STATIC,17,69,54,8
+    RTEXT           "Currency:",IDC_STATIC,38,49,33,8
+    LTEXT           "Total cost per month:",IDC_STATIC,6,97,70,8
+    LTEXT           "",IDC_STATIC,5,85,229,4,0,WS_EX_DLGMODALFRAME
+    LTEXT           "(Currency)",IDC_STATIC_CURRENCY,128,69,52,15
+    LTEXT           "(Currency)",IDC_STATIC_CURRENCY2ND,128,97,36,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_MAIN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 237
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 118
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_MAIN AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&How to use this program...  [F1]", ID_HELP_HOWTOUSETHISPROGRAM
+        MENUITEM "&Version history...",         ID_VERSION
+        MENUITEM "&About...",                   ID_HELP_ABOUT
+    END
+END
+
+#endif    // English resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
